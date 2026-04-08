@@ -1,0 +1,51 @@
+server:
+  port: 1997
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    config:
+      enabled: false  # disables config server check
+
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - name: Path
+                  args:
+                    pattern: /auth/register/**
+
+            - id: medicine-service
+              uri: lb://MEDICINE-SERVICE
+              predicates:
+                - name: Path
+                  args:
+                    pattern: /medicines/**
+
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - name: Path
+                  args:
+                    pattern: /orders/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
